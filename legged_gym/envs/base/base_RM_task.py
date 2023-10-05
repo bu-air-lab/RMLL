@@ -10,7 +10,7 @@ from legged_gym.reward_machines.vec_reward_machine import VecRewardMachine
 # Base class for RL tasks
 class BaseRMTask():
 
-    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless, experiment_type, gait):
+    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless, gait):
 
         self.gym = gymapi.acquire_gym()
 
@@ -55,35 +55,23 @@ class BaseRMTask():
             print("In base_RM_task.py, must define gait")
             exit()
 
-        if(experiment_type == 'rm'):
-            self.num_obs += self.num_rm_states + 1 #Extra +1 for rm_iters
-        elif(experiment_type == 'noRM_history'):
-            self.num_obs += (4 + 1) #Extra (4 + 1) for foot contacts + rm_iters
-        elif(experiment_type == 'noRM_foot_contacts'):
-            self.num_obs += (4 + 1) #Extra (4 + 1) for foot contacts + rm_iters
-        elif(experiment_type == 'noRM'):
-            self.num_obs += 1 #Extra + 1 for rm_iters
 
+        self.num_obs += self.num_rm_states
         self.num_privileged_obs = self.num_obs
 
         # allocate buffers
-        if(experiment_type == 'noRM_history'):
-            self.obs_buf = torch.zeros(self.num_envs, self.num_obs*cfg.env.noRM_history_length, device=self.device, dtype=torch.float)
-        else:
-            self.obs_buf = torch.zeros(self.num_envs, self.num_obs, device=self.device, dtype=torch.float)
+        self.obs_buf = torch.zeros(self.num_envs, self.num_obs, device=self.device, dtype=torch.float)
 
         self.current_rm_states_buf  = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
-        self.rm_iters = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
-        self.extraneous_contact_buffer = torch.zeros(self.num_envs, 4, device=self.device, dtype=torch.long)
+        self.rm_iters = torch.zeros(self.num_envs, device=self.device, dtype=torch.long) #timesteps since last RM state change
         self.foot_heights = torch.zeros(self.num_envs, 4, device=self.device, dtype=torch.float)
         self.rew_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.float)
         self.reset_buf = torch.ones(self.num_envs, device=self.device, dtype=torch.long)
         self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self.time_out_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
 
-        if(experiment_type == 'noRM_history'):
-            self.privileged_obs_buf = torch.zeros(self.num_envs, self.num_privileged_obs*cfg.env.noRM_history_length, device=self.device, dtype=torch.float)
-        elif self.num_privileged_obs is not None:
+ 
+        if self.num_privileged_obs is not None:
             self.privileged_obs_buf = torch.zeros(self.num_envs, self.num_privileged_obs, device=self.device, dtype=torch.float)
         else: 
             self.privileged_obs_buf = None

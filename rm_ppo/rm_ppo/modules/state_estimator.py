@@ -14,8 +14,8 @@ class StateEstimator(nn.Module):
         activation = nn.ELU()
 
         #Given obs has zeros in place of all dimensions of estimated state
-        mlp_input_dim_se = num_obs - 7
-        num_estimated_dimensions = 7
+        mlp_input_dim_se = num_obs - 6
+        num_estimated_dimensions = 6
 
         state_estimator_layers = []
         state_estimator_layers.append(nn.Linear(mlp_input_dim_se, state_estimator_hidden_dims[0]))
@@ -34,7 +34,7 @@ class StateEstimator(nn.Module):
     def forward(self, obs):
         
         #Base Velocity estimator doesn't take trailing zeros
-        original_obs = obs[:, :-7]
+        original_obs = obs[:, :-6]
 
         #Query base velocity estimator
         estimated_state = self.state_estimator(original_obs)

@@ -47,8 +47,7 @@ class OnPolicyRunner:
                  env: VecEnv,
                  train_cfg,
                  log_dir=None,
-                 device='cpu',
-                 experiment='rm'):
+                 device='cpu'):
 
         self.cfg=train_cfg["runner"]
         self.alg_cfg = train_cfg["algorithm"]
@@ -70,42 +69,20 @@ class OnPolicyRunner:
         self.num_steps_per_env = self.cfg["num_steps_per_env"]
         self.save_interval = self.cfg["save_interval"]
 
-        if(experiment == 'noRM_history'):
 
-            actor_critic: ActorCritic = actor_critic_class( self.env.num_obs*self.env.cfg.env.noRM_history_length,
-                                                        num_critic_obs*self.env.cfg.env.noRM_history_length,
-                                                        self.env.num_actions,
-                                                        **self.policy_cfg).to(self.device)
+        actor_critic: ActorCritic = actor_critic_class( self.env.num_obs,
+                                                    num_critic_obs,
+                                                    self.env.num_actions,
+                                                    **self.policy_cfg).to(self.device)
 
-            self.alg: PPO = alg_class(actor_critic, 
-                                    state_estimator,
-                                    isStateEstimator=False,
-                                    device=self.device, 
-                                    **self.alg_cfg)
+        self.alg: PPO = alg_class(actor_critic, 
+                                state_estimator,
+                                isStateEstimator=True,
+                                device=self.device, 
+                                **self.alg_cfg)
 
-            # init storage and model
-            self.alg.init_storage(self.env.num_envs, self.num_steps_per_env, [self.env.num_obs*self.env.cfg.env.noRM_history_length], [self.env.num_privileged_obs*self.env.cfg.env.noRM_history_length], [self.env.num_actions])
-
-
-        else:
-
-            actor_critic: ActorCritic = actor_critic_class( self.env.num_obs,
-                                                        num_critic_obs,
-                                                        self.env.num_actions,
-                                                        **self.policy_cfg).to(self.device)
-
-            self.alg: PPO = alg_class(actor_critic, 
-                                    state_estimator,
-                                    isStateEstimator=True,
-                                    device=self.device, 
-                                    **self.alg_cfg)
-
-            # init storage and model
-            self.alg.init_storage(self.env.num_envs, self.num_steps_per_env, [self.env.num_obs], [self.env.num_privileged_obs], [self.env.num_actions])
-
-
-
-
+        # init storage and model
+        self.alg.init_storage(self.env.num_envs, self.num_steps_per_env, [self.env.num_obs], [self.env.num_privileged_obs], [self.env.num_actions])
 
 
         # Log

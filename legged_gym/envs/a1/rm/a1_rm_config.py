@@ -21,31 +21,26 @@ class A1RMCfg( LeggedRobotCfg ):
         }
 
     class env( LeggedRobotCfg.env ):
-        num_envs = 4096
-        num_observations = 46
-        num_privileged_obs = 46
+        num_envs = 25 #1500 #4096
+        num_observations = 47
+        num_privileged_obs = 47
 
-        #rm_iters = [5, 10]
-        rm_iters = [6, 12]
-
-        min_base_height = 0.25
         min_foot_height = 0.03
         max_foot_height = 0.25
 
         max_action_rate = 40
 
-        #Number of historical observations to consider in noRM_history baseline
-        noRM_history_length = 12
-
     class commands (LeggedRobotCfg.commands):
 
         heading_command = False #Directly sample angular velocity command
-        num_commands = 2 #lin_vel_x and ang_vel_yaw
 
         class ranges (LeggedRobotCfg.commands.ranges):
 
             lin_vel_x = [-1, 1] # min max [m/s]
             ang_vel_yaw = [-1, 1]    # min max [rad/s]
+
+            gait_freq_range = [6, 12]
+            base_height_range = [0.1, 0.3]
 
             #Only for walk gait
             # lin_vel_x = [-0.5, 0.5] # min max [m/s]
@@ -99,6 +94,7 @@ class A1RMCfg( LeggedRobotCfg ):
         class scales( LeggedRobotCfg.rewards.scales ):
             torques = -0.0002
             dof_pos_limits = -10.0
+            tracking_base_height = 0.5
 
     class domain_rand( LeggedRobotCfg.domain_rand ):
         randomize_friction = True
@@ -128,6 +124,6 @@ class A1RMCfgPPO( LeggedRobotCfgPPO ):
 
         run_name = ''
         experiment_name = 'rm_a1'
-        max_iterations = 1500 # number of policy updates
-        load_run = 'rm_bound0' # folder directly containing model files
-        checkpoint = 1000 # saved model iter
+        max_iterations = 1000 # number of policy updates
+        load_run = 'rm_pace18' # folder directly containing model files
+        checkpoint = 200 # saved model iter

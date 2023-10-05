@@ -85,7 +85,7 @@ class VecRewardMachine:
 
         return next_states
 
-    def get_reward(self, current_states, next_states, s_info, experiment_type, gait):
+    def get_reward(self, current_states, next_states, s_info, gait):
 
         #Populate rm_rews with all self-loop rewards
         self.rm_rews = s_info['computed_reward']
@@ -105,7 +105,7 @@ class VecRewardMachine:
             #print(bonus_envs, sink_state_transition_envs)
 
 
-    def step(self, current_states, true_props, s_info, experiment_type, gait):
+    def step(self, current_states, true_props, s_info, gait):
         """
         Emulates a step on the reward machines from current_states when observing *true_props*.
         """
@@ -114,7 +114,7 @@ class VecRewardMachine:
         next_states = self.get_next_states(current_states, true_props, gait)
 
         #Update the reward
-        self.get_reward(current_states, next_states, s_info, experiment_type, gait)
+        self.get_reward(current_states, next_states, s_info, gait)
 
         return next_states, self.rm_rews
 

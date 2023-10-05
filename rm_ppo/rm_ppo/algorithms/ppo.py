@@ -104,7 +104,7 @@ class PPO:
 
             #Update obs with estimated state (replace features at the end of obs)
             estimated_state = self.state_estimator(obs)
-            obs = torch.cat((obs[:, :-7], estimated_state),dim=-1)
+            obs = torch.cat((obs[:, :-6], estimated_state),dim=-1)
 
         # Compute the actions and values
         self.transition.actions = self.actor_critic.act(obs).detach()
@@ -200,7 +200,7 @@ class PPO:
                 if(self.isStateEstimator):
 
                     # Update state_estimator params (via supervised learning)
-                    true_state = critic_obs_batch[:,-7:]
+                    true_state = critic_obs_batch[:,-6:]
                     predicted_state = self.state_estimator(obs_batch)
 
                     state_estimator_computed_loss = self.state_estimator_loss(predicted_state, true_state)

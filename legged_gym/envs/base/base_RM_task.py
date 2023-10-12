@@ -41,6 +41,8 @@ class BaseRMTask():
 
 
         self.num_obs = cfg.env.num_observations
+        self.estimated_state_size = cfg.env.estimated_state_size
+        self.num_obs += self.estimated_state_size
 
         self.reward_machine = VecRewardMachine(self.num_envs, self.device)
         self.num_rm_states = 2

@@ -604,7 +604,6 @@ class LeggedRobot(BaseRMTask):
         """
 
         rm_state_encoding = F.one_hot(self.current_rm_states_buf, num_classes=self.num_rm_states)
-
         self.obs_buf = torch.cat((
                             self.vel_commands[:, :2] * self.vel_commands_scale,
                             self.commanded_gait_freq * self.obs_scales.rm_iters_scale,
@@ -612,11 +611,14 @@ class LeggedRobot(BaseRMTask):
                             (self.dof_pos - self.default_dof_pos) * self.obs_scales.dof_pos,
                             self.dof_vel * self.obs_scales.dof_vel,
                             self.actions,
+                            #self.projected_gravity,
                             rm_state_encoding,
                             self.rm_iters.unsqueeze(1) * self.obs_scales.rm_iters_scale,
-                            torch.zeros(self.num_envs, 6, device=self.device, dtype=torch.float) #placeholder for estimated lin and ang vel and foot heights
+                            torch.zeros(self.num_envs, self.cfg.env.estimated_state_size, device=self.device, dtype=torch.float) #placeholder for estimated state
                             ),dim=-1)
 
+        base_height = torch.mean(self.root_states[:, 2].unsqueeze(1) - self.measured_heights, dim=1).unsqueeze(1)
+        #print(base_height)
         self.privileged_obs_buf = torch.cat((
                             self.vel_commands[:, :2] * self.vel_commands_scale,
                             self.commanded_gait_freq * self.obs_scales.rm_iters_scale,
@@ -624,11 +626,13 @@ class LeggedRobot(BaseRMTask):
                             (self.dof_pos - self.default_dof_pos) * self.obs_scales.dof_pos,
                             self.dof_vel * self.obs_scales.dof_vel,
                             self.actions,
+                            #self.projected_gravity,
                             rm_state_encoding,
                             self.rm_iters.unsqueeze(1) * self.obs_scales.rm_iters_scale,
                             #Only select x lin vel and ang vel
                             torch.index_select(self.base_lin_vel, 1, torch.cuda.LongTensor([0,2], device=self.device)) * self.obs_scales.lin_vel,
-                            self.foot_heights
+                            self.foot_heights,
+                            base_height
                             ),dim=-1)
 
         if self.add_noise:
@@ -1336,7 +1340,7 @@ class LeggedRobot(BaseRMTask):
         # Tracking of base height
         base_height = torch.mean(self.root_states[:, 2].unsqueeze(1) - self.measured_heights, dim=1)
         base_height_error = torch.square(self.commanded_base_height[:,0] - base_height)
-        return torch.exp(-base_height_error/self.cfg.rewards.tracking_sigma)
+        return base_height_error
 
 
     # def _reward_base_height(self):

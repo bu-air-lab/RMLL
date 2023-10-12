@@ -5,6 +5,7 @@ import torch.nn as nn
 
 class StateEstimator(nn.Module):
     def __init__(self,  num_obs,
+                        estimated_state_size,
                         state_estimator_hidden_dims=[128,128],
                         activation='elu',
                         init_noise_std=1.0):
@@ -13,9 +14,11 @@ class StateEstimator(nn.Module):
 
         activation = nn.ELU()
 
+        self.estimated_state_size = estimated_state_size
+
         #Given obs has zeros in place of all dimensions of estimated state
-        mlp_input_dim_se = num_obs - 6
-        num_estimated_dimensions = 6
+        mlp_input_dim_se = num_obs - self.estimated_state_size
+        num_estimated_dimensions = self.estimated_state_size
 
         state_estimator_layers = []
         state_estimator_layers.append(nn.Linear(mlp_input_dim_se, state_estimator_hidden_dims[0]))
@@ -34,7 +37,7 @@ class StateEstimator(nn.Module):
     def forward(self, obs):
         
         #Base Velocity estimator doesn't take trailing zeros
-        original_obs = obs[:, :-6]
+        original_obs = obs[:, :-self.estimated_state_size]
 
         #Query base velocity estimator
         estimated_state = self.state_estimator(original_obs)

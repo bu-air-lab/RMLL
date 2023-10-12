@@ -40,6 +40,7 @@ class PPO:
     def __init__(self,
                  actor_critic,
                  state_estimator,
+                 estimated_state_size,
                  isStateEstimator=True,
                  num_learning_epochs=1,
                  num_mini_batches=1,
@@ -62,6 +63,7 @@ class PPO:
         self.schedule = schedule
         self.learning_rate = learning_rate
         self.isStateEstimator = isStateEstimator
+        self.estimated_state_size = estimated_state_size
 
         # PPO components
         self.actor_critic = actor_critic
@@ -104,7 +106,7 @@ class PPO:
 
             #Update obs with estimated state (replace features at the end of obs)
             estimated_state = self.state_estimator(obs)
-            obs = torch.cat((obs[:, :-6], estimated_state),dim=-1)
+            obs = torch.cat((obs[:, :-self.estimated_state_size], estimated_state),dim=-1)
 
         # Compute the actions and values
         self.transition.actions = self.actor_critic.act(obs).detach()
@@ -200,7 +202,7 @@ class PPO:
                 if(self.isStateEstimator):
 
                     # Update state_estimator params (via supervised learning)
-                    true_state = critic_obs_batch[:,-6:]
+                    true_state = critic_obs_batch[:,-self.estimated_state_size:]
                     predicted_state = self.state_estimator(obs_batch)
 
                     state_estimator_computed_loss = self.state_estimator_loss(predicted_state, true_state)

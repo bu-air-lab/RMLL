@@ -7,7 +7,7 @@ Our implementation is compatible with vectorized environments on GPU
 
 1. Install pytorch with cuda and Isaac Gym (see https://github.com/leggedrobotics/legged_gym for details)
 2. Install rm_ppo: ``` cd legged_gym && pip3 install -e .```
-3. Install RM_Isaac: ``` cd RM_Isaac && pip3 install -e .```
+3. Install seeing_eye_open_vocab: ``` cd RM_Isaac && pip3 install -e .```
 
 # Train
 
@@ -18,7 +18,7 @@ Experiment types: rm, noRM_history, noRM_foot_contacts, noRM
 Example command to train pace gait, with rm state included in state space, on random seed 18:
 
 ```
-python3 legged_gym/scripts/train.py --task=a1_rm --gait=pace --experiment=rm --seed=18 --headless
+python3 legged_gym/scripts/train.py --task=a1_rm --gait=trot --seed=18 --headless
 ```
 
 -- headless means training will not be visualized.
@@ -40,5 +40,5 @@ Be sure to update path to model in pybullet_val/scripts/play_bullet.py
 First update load_run and checkpoint in config file. Then, run:
 
 ```
-python3 legged_gym/scripts/play.py --task=a1_rm --gait=pace --experiment=rm --seed=0
+python3 legged_gym/scripts/play.py --task=a1_rm --gait=trot --seed=0
 ```

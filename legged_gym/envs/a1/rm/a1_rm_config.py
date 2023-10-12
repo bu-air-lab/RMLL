@@ -21,9 +21,12 @@ class A1RMCfg( LeggedRobotCfg ):
         }
 
     class env( LeggedRobotCfg.env ):
-        num_envs = 25 #1500 #4096
-        num_observations = 47
-        num_privileged_obs = 47
+        num_envs = 1000 #4096
+        num_observations = 41
+        num_privileged_obs = 41
+
+        #Number of dimensions state estimator estimates
+        estimated_state_size = 7
 
         min_foot_height = 0.03
         max_foot_height = 0.25
@@ -40,7 +43,7 @@ class A1RMCfg( LeggedRobotCfg ):
             ang_vel_yaw = [-1, 1]    # min max [rad/s]
 
             gait_freq_range = [6, 12]
-            base_height_range = [0.1, 0.3]
+            base_height_range = [0.2, 0.35]
 
             #Only for walk gait
             # lin_vel_x = [-0.5, 0.5] # min max [m/s]
@@ -94,7 +97,7 @@ class A1RMCfg( LeggedRobotCfg ):
         class scales( LeggedRobotCfg.rewards.scales ):
             torques = -0.0002
             dof_pos_limits = -10.0
-            tracking_base_height = 0.5
+            tracking_base_height = -100.0
 
     class domain_rand( LeggedRobotCfg.domain_rand ):
         randomize_friction = True
@@ -125,5 +128,5 @@ class A1RMCfgPPO( LeggedRobotCfgPPO ):
         run_name = ''
         experiment_name = 'rm_a1'
         max_iterations = 1000 # number of policy updates
-        load_run = 'rm_pace18' # folder directly containing model files
-        checkpoint = 200 # saved model iter
+        load_run = 'trot0' # folder directly containing model files
+        checkpoint = 1000 # saved model iter

@@ -60,7 +60,7 @@ class OnPolicyRunner:
         else:
             num_critic_obs = self.env.num_obs
 
-        state_estimator = StateEstimator(self.env.num_obs).to(self.device)
+        state_estimator = StateEstimator(self.env.num_obs, self.env.estimated_state_size).to(self.device)
 
 
         actor_critic_class = eval(self.cfg["policy_class_name"]) # ActorCritic
@@ -77,6 +77,7 @@ class OnPolicyRunner:
 
         self.alg: PPO = alg_class(actor_critic, 
                                 state_estimator,
+                                self.env.estimated_state_size,
                                 isStateEstimator=True,
                                 device=self.device, 
                                 **self.alg_cfg)

@@ -77,12 +77,13 @@ def play(args):
 
     for i in range(10*int(env.max_episode_length)):
 
-        # if(i%100 == 0):
-        #     base_height_range_idx += 1
-        #     if(base_height_range_idx >= len(base_height_ranges)):
-        #         base_height_range_idx = 0
+        if(i%100 == 0):
+            print("Height updated!!")
+            base_height_range_idx += 1
+            if(base_height_range_idx >= len(base_height_ranges)):
+                base_height_range_idx = 0
 
-        # env_cfg.commands.ranges.base_height_range = base_height_ranges[base_height_range_idx]
+        env_cfg.commands.ranges.base_height_range = base_height_ranges[base_height_range_idx]
 
         estimated_state = state_estimator(obs)
         obs = torch.cat((obs[:, :-env_cfg.env.estimated_state_size], estimated_state),dim=-1)

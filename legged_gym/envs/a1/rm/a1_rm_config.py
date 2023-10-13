@@ -26,7 +26,7 @@ class A1RMCfg( LeggedRobotCfg ):
         num_privileged_obs = 41
 
         #Number of dimensions state estimator estimates
-        estimated_state_size = 7
+        estimated_state_size = 6
 
         min_foot_height = 0.03
         max_foot_height = 0.25

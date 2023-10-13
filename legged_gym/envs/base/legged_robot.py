@@ -631,8 +631,8 @@ class LeggedRobot(BaseRMTask):
                             self.rm_iters.unsqueeze(1) * self.obs_scales.rm_iters_scale,
                             #Only select x lin vel and ang vel
                             torch.index_select(self.base_lin_vel, 1, torch.cuda.LongTensor([0,2], device=self.device)) * self.obs_scales.lin_vel,
-                            self.foot_heights,
-                            base_height
+                            self.foot_heights#,
+                            #base_height
                             ),dim=-1)
 
         if self.add_noise:
@@ -905,6 +905,9 @@ class LeggedRobot(BaseRMTask):
         noise_vec[28:] = 0. # previous actions + RM state + state estimation
 
         return noise_vec
+
+
+
 
     #----------------------------------------
     def _init_buffers(self):

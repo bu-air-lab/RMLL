@@ -6,8 +6,8 @@ Our implementation is compatible with vectorized environments on GPU
 # Installation
 
 1. Install pytorch with cuda and Isaac Gym (see https://github.com/leggedrobotics/legged_gym for details)
-2. Install rm_ppo: ``` cd legged_gym && pip3 install -e .```
-3. Install seeing_eye_open_vocab: ``` cd RM_Isaac && pip3 install -e .```
+2. Install rm_ppo: ``` cd rm_ppo && pip3 install -e .```
+3. Install legged_gym: ``` cd RMLL && pip3 install -e .```
 
 # Train
 

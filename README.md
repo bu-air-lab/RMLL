@@ -18,7 +18,7 @@ Experiment types: rm, noRM_history, noRM_foot_contacts, noRM
 Example command to train pace gait, with rm state included in state space, on random seed 18:
 
 ```
-python3 legged_gym/scripts/train.py --task=a1_rm --gait=trot --seed=18 --headless
+python3 legged_gym/scripts/train.py --task=a1_rm --gait=pace --seed=18 --headless
 ```
 
 -- headless means training will not be visualized.

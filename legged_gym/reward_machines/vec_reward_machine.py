@@ -26,20 +26,6 @@ class VecRewardMachine:
             q1_q0_indicies = (true_props == 2).nonzero()
             next_states[q1_q0_indicies] = 0
 
-        # elif(gait == 'biped_bound'):
-
-        #     #Update from q0 -> q1 if true_props = 1
-        #     q0_q1_indicies = (true_props == 1).nonzero()
-        #     next_states[q0_q1_indicies] = 1
-
-        #     #Update from q1 -> q2 if true_props = 2
-        #     q1_q2_indicies = (true_props == 2).nonzero()
-        #     next_states[q1_q2_indicies] = 2
-
-        #     #Update from q2 -> q0 if true_props = 3
-        #     q2_q3_indicies = (true_props == 3).nonzero()
-        #     next_states[q2_q3_indicies] = 0
-
         #walk gaits are 4-state RMs
         elif(gait =='walk' or gait == 'three_one'):
 
@@ -79,6 +65,28 @@ class VecRewardMachine:
 
             sink_state_indicies = (true_props == -1).nonzero()
             next_states[sink_state_indicies] = 4
+
+        elif(gait == 'canter'):
+
+            #Update from q0 -> q1 if true_props = 1
+            q0_q1_indicies = (true_props == 1).nonzero()
+            next_states[q0_q1_indicies] = 1
+
+            #Update from q1 -> q2 if true_props = 2
+            q1_q2_indicies = (true_props == 2).nonzero()
+            next_states[q1_q2_indicies] = 2
+
+            #Update from q2 -> q3 if true_props = 3
+            q2_q3_indicies = (true_props == 3).nonzero()
+            next_states[q2_q3_indicies] = 3
+
+            #Update from q3 -> q4 if true_props = 4
+            q3_q4_indicies = (true_props == 4).nonzero()
+            next_states[q3_q4_indicies] = 4
+
+            #Update from q4 -> q0 if true_props = 5
+            q4_q0_indicies = (true_props == 5).nonzero()
+            next_states[q4_q0_indicies] = 0
 
         else:
             print("DEFINE REWARD IN vec_reward_machine.py")

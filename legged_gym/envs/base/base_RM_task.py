@@ -53,6 +53,8 @@ class BaseRMTask():
             self.num_rm_states = 4
         elif(gait == 'half_bound'):
             self.num_rm_states = 5
+        elif(gait == 'canter'):
+            self.num_rm_states = 5
         else:
             print("In base_RM_task.py, must define gait")
             exit()

@@ -22,8 +22,8 @@ class A1RMCfg( LeggedRobotCfg ):
 
     class env( LeggedRobotCfg.env ):
         num_envs = 1000 #4096
-        num_observations = 41
-        num_privileged_obs = 41
+        num_observations = 40
+        num_privileged_obs = 40
 
         #Number of dimensions state estimator estimates
         estimated_state_size = 6
@@ -43,7 +43,7 @@ class A1RMCfg( LeggedRobotCfg ):
             ang_vel_yaw = [-1, 1]    # min max [rad/s]
 
             gait_freq_range = [6, 12]
-            base_height_range = [0.2, 0.35]
+            #base_height_range = [0.2, 0.35]
 
             #Only for walk gait
             # lin_vel_x = [-0.5, 0.5] # min max [m/s]
@@ -97,7 +97,7 @@ class A1RMCfg( LeggedRobotCfg ):
         class scales( LeggedRobotCfg.rewards.scales ):
             torques = -0.0002
             dof_pos_limits = -10.0
-            tracking_base_height = -100.0
+            #tracking_base_height = -100.0
 
     class domain_rand( LeggedRobotCfg.domain_rand ):
         randomize_friction = True

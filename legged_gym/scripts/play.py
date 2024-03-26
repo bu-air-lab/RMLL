@@ -56,8 +56,8 @@ def play(args):
     env_cfg.commands.ranges.lin_vel_x = [0.5, 0.5] # min max [m/s]
     env_cfg.commands.ranges.ang_vel_yaw = [0.0, 0.0]    # min max [rad/s]
 
-    env_cfg.commands.ranges.gait_freq_range = [6, 12]
-    env_cfg.commands.ranges.base_height_range = [0.2, 0.2]
+    #env_cfg.commands.ranges.gait_freq_range = [5,6]
+    # env_cfg.commands.ranges.base_height_range = [0.2, 0.2]
 
 
     # prepare environment
@@ -72,27 +72,30 @@ def play(args):
 
 
     #Increase base height over time
-    base_height_ranges = [[0.2,0.2], [0.22, 0.22], [0.24, 0.24], [0.26, 0.26], [0.28, 0.28], [0.3, 0.3]]
-    base_height_range_idx = 0
+    # base_height_ranges = [[0.2,0.2], [0.22, 0.22], [0.24, 0.24], [0.26, 0.26], [0.28, 0.28], [0.3, 0.3]]
+    # base_height_range_idx = 0
 
     for i in range(10*int(env.max_episode_length)):
 
-        if(i%100 == 0):
-            print("Height updated!!")
-            base_height_range_idx += 1
-            if(base_height_range_idx >= len(base_height_ranges)):
-                base_height_range_idx = 0
+        # if(i%100 == 0):
+        #     print("Height updated!!")
+        #     base_height_range_idx += 1
+        #     if(base_height_range_idx >= len(base_height_ranges)):
+        #         base_height_range_idx = 0
 
-        env_cfg.commands.ranges.base_height_range = base_height_ranges[base_height_range_idx]
+        #env_cfg.commands.ranges.base_height_range = base_height_ranges[base_height_range_idx]
 
         estimated_state = state_estimator(obs)
         obs = torch.cat((obs[:, :-env_cfg.env.estimated_state_size], estimated_state),dim=-1)
 
-        #print("Commanded base height:", obs[:,3])
-        #obs[:,3] = base_height_command
+        #Set base freq command manually
+        obs[:,2] = 5 * 0.1
 
         actions = policy(obs.detach())
         obs, _, rews, dones, infos = env.step(actions.detach())
+
+        # if(dones.item()):
+        #     print("DONE")
 
 
 if __name__ == '__main__':

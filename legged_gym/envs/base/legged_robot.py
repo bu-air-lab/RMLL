@@ -160,6 +160,7 @@ class LeggedRobot(BaseRMTask):
         q2_envs = (self.current_rm_states_buf == 2).nonzero()
         q3_envs = (self.current_rm_states_buf == 3).nonzero()
         q4_envs = (self.current_rm_states_buf == 4).nonzero()
+        q5_envs = (self.current_rm_states_buf == 5).nonzero()
 
         if(self.gait == 'trot'):
 
@@ -408,22 +409,72 @@ class LeggedRobot(BaseRMTask):
                                                 wanted_contacts_mask=self.FR_mask,
                                                 unwanted_contacts_mask = self.FL_RL_RR_mask)
             FR_contacts_q3 = self.intersection(FR_contacts, q3_envs)
-            q3_q4_envs = self.intersection(FR_contacts_q3, (self.rm_iters[:] >= self.commanded_gait_freq.squeeze(1)).nonzero())
-            q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,0] >= self.cfg.env.min_foot_height).nonzero())
-            q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,2] >= self.cfg.env.min_foot_height).nonzero())
-            q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,3] >= self.cfg.env.min_foot_height).nonzero())
-            prop_symbols[q3_q4_envs] = 4
+            # q3_q4_envs = self.intersection(FR_contacts_q3, (self.rm_iters[:] >= self.commanded_gait_freq.squeeze(1)).nonzero())
+            # q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,0] >= self.cfg.env.min_foot_height).nonzero())
+            # q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,2] >= self.cfg.env.min_foot_height).nonzero())
+            # q3_q4_envs = self.intersection(q3_q4_envs, (self.foot_heights[:,3] >= self.cfg.env.min_foot_height).nonzero())
+            # prop_symbols[q3_q4_envs] = 4
+            q3_q0_envs = self.intersection(FR_contacts_q3, (self.rm_iters[:] >= self.commanded_gait_freq.squeeze(1)).nonzero())
+            q3_q0_envs = self.intersection(q3_q0_envs, (self.foot_heights[:,0] >= self.cfg.env.min_foot_height).nonzero())
+            q3_q0_envs = self.intersection(q3_q0_envs, (self.foot_heights[:,2] >= self.cfg.env.min_foot_height).nonzero())
+            q3_q0_envs = self.intersection(q3_q0_envs, (self.foot_heights[:,3] >= self.cfg.env.min_foot_height).nonzero())
+            prop_symbols[q3_q0_envs] = 4
 
-            none_contacts = self.contact_envs(foot_contacts, 
-                                                wanted_contacts_mask=self.none_mask,
-                                                unwanted_contacts_mask = self.all_mask)
-            none_contacts_q4 = self.intersection(none_contacts, q4_envs)
-            q4_q0_envs = self.intersection(none_contacts_q4, (self.rm_iters[:] >= self.commanded_gait_freq.squeeze(1)).nonzero())
-            q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,0] >= self.cfg.env.min_foot_height).nonzero())
-            q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,1] >= self.cfg.env.min_foot_height).nonzero())
-            q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,2] >= self.cfg.env.min_foot_height).nonzero())
-            q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,3] >= self.cfg.env.min_foot_height).nonzero())
-            prop_symbols[q4_q0_envs] = 5
+            # none_contacts = self.contact_envs(foot_contacts, 
+            #                                     wanted_contacts_mask=self.none_mask,
+            #                                     unwanted_contacts_mask = self.all_mask)
+            # none_contacts_q4 = self.intersection(none_contacts, q4_envs)
+            # q4_q0_envs = self.intersection(none_contacts_q4, (self.rm_iters[:] >= self.commanded_gait_freq.squeeze(1)).nonzero())
+            # q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,0] >= self.cfg.env.min_foot_height).nonzero())
+            # q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,1] >= self.cfg.env.min_foot_height).nonzero())
+            # q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,2] >= self.cfg.env.min_foot_height).nonzero())
+            # q4_q0_envs = self.intersection(q4_q0_envs, (self.foot_heights[:,3] >= self.cfg.env.min_foot_height).nonzero())
+            # prop_symbols[q4_q0_envs] = 5
+
+
+
+            #Go to sink state if FL makes contact while at state q0 or q4
+            #Go to sink state if FR makes contact while at state q0 or q1
+            #Go to sink state if RL makes contact while at state q1 or q2 or q3 or q4
+            #Go to sink state if RR makes contact while at state q0 or q4
+            FL_contact_envs = foot_contacts[:,0].nonzero()
+            FR_contact_envs = foot_contacts[:,1].nonzero()
+            RL_contact_envs = foot_contacts[:,2].nonzero()
+            RR_contact_envs = foot_contacts[:,3].nonzero()
+
+            FL_contact_envs_q0 = self.intersection(FL_contact_envs, q0_envs)
+            FL_contact_envs_q4 = self.intersection(FL_contact_envs, q4_envs)
+
+            FR_contact_envs_q0 = self.intersection(FR_contact_envs, q0_envs)
+            FR_contact_envs_q1 = self.intersection(FR_contact_envs, q1_envs)
+
+            RL_contact_envs_q1 = self.intersection(RL_contact_envs, q1_envs)
+            RL_contact_envs_q2 = self.intersection(RL_contact_envs, q2_envs)
+            RL_contact_envs_q3 = self.intersection(RL_contact_envs, q3_envs)
+            RL_contact_envs_q4 = self.intersection(RL_contact_envs, q4_envs)
+
+            RR_contact_envs_q0 = self.intersection(RR_contact_envs, q0_envs)
+            RR_contact_envs_q4 = self.intersection(RR_contact_envs, q4_envs)
+
+            #Give 20 step grace period in beginning of episode where FL/FR/RR feet can make contact
+            FL_contact_envs_q0 = self.intersection(FL_contact_envs_q0, (self.episode_length_buf[:] >= 20).nonzero())
+            FR_contact_envs_q0 = self.intersection(FR_contact_envs_q0, (self.episode_length_buf[:] >= 20).nonzero())
+            RR_contact_envs_q0 = self.intersection(RR_contact_envs_q0, (self.episode_length_buf[:] >= 20).nonzero())
+
+            prop_symbols[FL_contact_envs_q0] = -1
+            #prop_symbols[FL_contact_envs_q4] = -1
+
+            prop_symbols[FR_contact_envs_q0] = -1
+            prop_symbols[FR_contact_envs_q1] = -1
+
+            prop_symbols[RL_contact_envs_q1] = -1
+            prop_symbols[RL_contact_envs_q2] = -1
+            prop_symbols[RL_contact_envs_q3] = -1
+            #prop_symbols[RL_contact_envs_q4] = -1
+
+            prop_symbols[RR_contact_envs_q0] = -1
+            #prop_symbols[RR_contact_envs_q4] = -1
+
 
         return prop_symbols
 
@@ -663,6 +714,7 @@ class LeggedRobot(BaseRMTask):
         """
 
         rm_state_encoding = F.one_hot(self.current_rm_states_buf, num_classes=self.num_rm_states)
+        #print("RM state:", rm_state_encoding)
         self.obs_buf = torch.cat((
                             self.vel_commands[:, :2] * self.vel_commands_scale,
                             self.commanded_gait_freq * self.obs_scales.rm_iters_scale,

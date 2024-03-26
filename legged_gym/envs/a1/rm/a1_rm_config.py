@@ -39,10 +39,12 @@ class A1RMCfg( LeggedRobotCfg ):
 
         class ranges (LeggedRobotCfg.commands.ranges):
 
-            lin_vel_x = [-1, 1] # min max [m/s]
-            ang_vel_yaw = [-1, 1]    # min max [rad/s]
-
-            gait_freq_range = [6, 12]
+            # lin_vel_x = [-1, 1] # min max [m/s]
+            # ang_vel_yaw = [-1, 1]    # min max [rad/s]
+            lin_vel_x = [0, 3] # min max [m/s]
+            ang_vel_yaw = [-0.25, 0.25]    # min max [rad/s]
+            gait_freq_range = [5, 6]
+            #gait_freq_range = [6, 12]
             #base_height_range = [0.2, 0.35]
 
             #Only for walk gait
@@ -127,6 +129,6 @@ class A1RMCfgPPO( LeggedRobotCfgPPO ):
 
         run_name = ''
         experiment_name = 'rm_a1'
-        max_iterations = 1000 # number of policy updates
-        load_run = 'trot0' # folder directly containing model files
-        checkpoint = 1000 # saved model iter
+        max_iterations = 5000 # number of policy updates
+        load_run = 'canter2' # folder directly containing model files
+        checkpoint = 4700 # saved model iter

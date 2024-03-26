@@ -81,12 +81,18 @@ class VecRewardMachine:
             next_states[q2_q3_indicies] = 3
 
             #Update from q3 -> q4 if true_props = 4
-            q3_q4_indicies = (true_props == 4).nonzero()
-            next_states[q3_q4_indicies] = 4
+            # q3_q4_indicies = (true_props == 4).nonzero()
+            # next_states[q3_q4_indicies] = 4
+            q3_q0_indicies = (true_props == 4).nonzero()
+            next_states[q3_q0_indicies] = 0
 
             #Update from q4 -> q0 if true_props = 5
-            q4_q0_indicies = (true_props == 5).nonzero()
-            next_states[q4_q0_indicies] = 0
+            # q4_q0_indicies = (true_props == 5).nonzero()
+            # next_states[q4_q0_indicies] = 0
+
+            #Go to sink state on unwanted contacts
+            sink_state_indicies = (true_props == -1).nonzero()
+            next_states[sink_state_indicies] = 4
 
         else:
             print("DEFINE REWARD IN vec_reward_machine.py")
@@ -99,7 +105,7 @@ class VecRewardMachine:
         self.rm_rews = s_info['computed_reward']
 
         #Find environments that had an RM transition, and replace rm_rews with bonus reward
-        if(gait != 'half_bound'):
+        if(gait != 'half_bound' and gait != 'canter'):
             bonus_envs = (current_states - next_states).nonzero()
             self.rm_rews[bonus_envs] *= self.bonus
         
@@ -110,7 +116,14 @@ class VecRewardMachine:
 
             sink_state_envs = (next_states == 4).nonzero()
             self.rm_rews[sink_state_envs] = 0
-            #print(bonus_envs, sink_state_transition_envs)
+
+        elif(gait == 'canter'):
+
+            bonus_envs = (current_states - next_states).nonzero()
+            self.rm_rews[bonus_envs] *= self.bonus
+
+            sink_state_envs = (next_states == 4).nonzero()
+            self.rm_rews[sink_state_envs] = 0
 
 
     def step(self, current_states, true_props, s_info, gait):
